@@ -1,0 +1,8 @@
+* Generate rss feed using the google news method:  
+    https://newscatcherapi.com/blog/google-news-rss-search-parameters-the-missing-documentaiton
+* Scrape content into html:
+    https://github.com/aarmea/readability-scrape
+
+
+
+    

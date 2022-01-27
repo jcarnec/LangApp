@@ -1,0 +1,15 @@
+{
+    "workbench.colorTheme": "monokai-charcoal (white)",
+    "search.searchEditor.reusePriorSearchConfiguration": true,
+    "search.searchEditor.doubleClickBehaviour": "openLocationToSide",
+    "search.exclude": {
+        "**/.git": true,
+        "**/node_modules": true,
+        "**/tmp": true,
+    },
+    "todo-tree.tree.scanMode": "workspace",
+    "todo-tree.filtering.excludeGlobs": [
+        "**/node-modules",
+        "**/api-env"
+    ] 
+}

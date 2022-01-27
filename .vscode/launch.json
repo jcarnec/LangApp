@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        {
+            "name": "Custom attach packager",
+            "request": "attach",
+            "type": "reactnative",
+            "cwd": "${workspaceFolder}",
+            "port": 19000,
+            "preLaunchTask": "killDebugger"
+            
+        }
+    ]
+}

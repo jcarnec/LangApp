@@ -1,0 +1,9 @@
+# requirements.txt
+flask
+flask_restful
+pandas
+nltk
+firebase_admin
+torch
+easynmt
+

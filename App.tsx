@@ -95,7 +95,7 @@ export default function App() {
   console.log(app.name, "has rebooted");
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(getAuth().currentUser);
-
+  
   onAuthStateChanged(getAuth(), (user) => {
     if (user) {
       setUser(user);

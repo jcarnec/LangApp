@@ -6,4 +6,5 @@ nltk
 firebase_admin
 torch
 easynmt
+flask_cors
 

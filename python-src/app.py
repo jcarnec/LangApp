@@ -7,7 +7,6 @@ from sys import stdout
 from flask import Flask, request, jsonify
 from firebase_admin import credentials, firestore, initialize_app
 from flask_cors import CORS, cross_origin
-from readabilipy import simple_json_from_html_string
 from easynmt import EasyNMT
 import requests
 

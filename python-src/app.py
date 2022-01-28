@@ -89,7 +89,6 @@ def read():
 
     return (jsonify({'url': url}), 200)
 
-# COMPLETE (target language) DONE pass in target language and source
 @app.route('/translate', methods=['POST'])
 def translate():
     sentence = request.json['params']['sentence']
@@ -102,7 +101,6 @@ def translate():
     return jsonify(str(translation)), 200
 
 
-# COMPLETE (target language) Done language pair for user
 @app.route('/getLanguagePair', methods=['POST'])
 def getLanguagePair():
     id = request.json['params']['uid']
@@ -113,7 +111,6 @@ def getLanguagePair():
                      translateLanguage['itemValue']), 200)
 
 
-# COMPLETE (target language) DONE create getTranslate
 @app.route('/getTranslate', methods=['POST'])
 def getTranslate():
     id = request.json['params']['uid']
@@ -139,7 +136,6 @@ def setLearningLanguage():
     return ({"success": True}, 200)
 
 
-# COMPLETE (target language) DONE set translate on firestore
 @app.route('/postTranslate', methods=['POST'])
 def setTranslateLanguage():
     id = request.json['params']['uid']

@@ -1,12 +1,12 @@
-import { StyleSheet } from 'react-native';
-import WebView from 'react-native-webview';
+import { StyleSheet } from "react-native";
+import WebView from "react-native-webview";
 
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 22
+    marginTop: 22,
   },
   modalView: {
     margin: 20,
@@ -17,16 +17,17 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2
+      height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5
+    elevation: 5,
   },
+  pageView: { flex: 1 },
   button: {
     borderRadius: 20,
     padding: 10,
-    elevation: 2
+    elevation: 2,
   },
   buttonOpen: {
     backgroundColor: "#F194FF",
@@ -37,24 +38,18 @@ const styles = StyleSheet.create({
   textStyle: {
     color: "white",
     fontWeight: "bold",
-    textAlign: "center"
+    textAlign: "center",
   },
   modalText: {
     marginBottom: 15,
-    textAlign: "center"
+    textAlign: "center",
   },
   modal: {
-    flex: 1
+    flex: 1,
   },
-  pageView: {
-    flex: 2
-  }, 
   WebView: {
-    flex: 1
-  }
-
+    flex: 1,
+  },
 });
 
-
-export {styles}
-
+export { styles };

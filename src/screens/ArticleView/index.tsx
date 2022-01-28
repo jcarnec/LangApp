@@ -1,5 +1,12 @@
-import React, { ReactNode, useEffect, useState } from "react";
-import { ScrollView, View, Text, Modal, Pressable } from "react-native";
+import React, { useRef, ReactNode, useEffect, useState } from "react";
+import {
+  ScrollView,
+  View,
+  Text,
+  Modal,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 import { useAmbientTRenderEngine } from "react-native-render-html";
 import { homeScreenProps } from "../../../global";
 import axios from "axios";
@@ -11,38 +18,44 @@ import TranslationModal from "./components/TranslationModal";
 import { getLanguagePairUrl } from "../AddSubscriptionsInterest/api";
 import { getAuth } from "firebase/auth";
 import SendTranslationModal from "./components/SendTranslationModal";
-import SwipeView from "./components/SwipeView";
+import { Modalize } from "react-native-modalize";
+
 function ArticleView({ route, navigation }: homeScreenProps) {
-  const [selectedWord, setSelectedWord] = useState("");
+  const [selectedWords, setSelectedWord] = useState("");
+  const [pendingSelectedWords, setPendingSelectedWords] = useState("");
   const [translation, setTranslation] = useState("");
 
-  const sendTranslation = () => {
-          axios
-            .post(getLanguagePairUrl(), {
-              params: {
-                uid: getAuth().currentUser?.uid,
-              },
-            })
-            .then((l) => {
-              axios
-                .post(getTranslationUrl(), {
-                  params: {
-                    sentence: selectedWord,
-                    learningLanguage: l.data[0], 
-                    translateLanguage: l.data[1],
-                  },
-                })
-                .then((response) => {
-                  setSelectedWord(selectedWord);
-                  setTranslation(response.data);
-                })
-                .catch((e) => {
-                  alert(e);
-                  throw e;
-                });
-            });
+  useEffect(() => {
+    sendTranslation()
+  }, [pendingSelectedWords]);
+  
 
-  }
+  const sendTranslation = () => {
+    axios
+      .post(getLanguagePairUrl(), {
+        params: {
+          uid: getAuth().currentUser?.uid,
+        },
+      })
+      .then((l) => {
+        axios
+          .post(getTranslationUrl(), {
+            params: {
+              sentence: pendingSelectedWords,
+              learningLanguage: l.data[0],
+              translateLanguage: l.data[1],
+            },
+          })
+          .then((response) => {
+            setSelectedWord(pendingSelectedWords);
+            setTranslation(response.data);
+          })
+          .catch((e) => {
+            alert(e);
+            throw e;
+          });
+      });
+  };
 
   const runFirst = `
 
@@ -55,7 +68,7 @@ function ArticleView({ route, navigation }: homeScreenProps) {
           timeout = setTimeout(() => {
             text = window.getSelection().toString();
             window.ReactNativeWebView.postMessage(text)
-          }, 100);
+          }, 2000);
         } 
       }
       true; // note: this is required, or you'll sometimes get silent failures
@@ -63,9 +76,15 @@ function ArticleView({ route, navigation }: homeScreenProps) {
       document.addEventListener('selectionchange', (e)=>{getSelectionText()})
         `;
 
+  const modalizeRef = useRef<Modalize>(null);
+
+  const onOpen = () => {
+    modalizeRef.current?.open();
+  };
   return (
     <View style={styles.pageView}>
-      <TranslationModal
+      <Modalize ref={modalizeRef}></Modalize>
+      {/* <TranslationModal
         selectedWord={selectedWord}
         translation={translation}
       ></TranslationModal>
@@ -74,21 +93,20 @@ function ArticleView({ route, navigation }: homeScreenProps) {
         selectedWord={selectedWord}
         translation={translation}
         onPressFunction={sendTranslation}
-        >
-      </SendTranslationModal>
-    
-      
-      {/* COMPLETE (target language) pass paramter of language */}
+      ></SendTranslationModal> */}
+
       <WebView
         style={styles.WebView}
         source={{ uri: route.params.url }}
         onMessage={(event) => {
-          setSelectedWord(event.nativeEvent.data);
+          setPendingSelectedWords(event.nativeEvent.data);
         }}
         injectedJavaScript={runFirst}
       ></WebView>
-
-      <SwipeView></SwipeView>
+      <TouchableOpacity onPress={onOpen}>
+        <Text>{selectedWords}</Text>
+        <Text>{translation}</Text>
+      </TouchableOpacity>
     </View>
   );
 }

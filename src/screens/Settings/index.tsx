@@ -8,7 +8,6 @@ import { getAuth } from "firebase/auth";
 
 const SettingsScreen = (props: any) => {
 
-  // COMPLETE (target language) Done add target language
 
   let settingsData = [
     {
@@ -35,7 +34,6 @@ const SettingsScreen = (props: any) => {
     },
   ];
 
-  // COMPLETE (target language) Done get language pair
   useEffect(() => {
     axios
       .post(getLanguagePairUrl(), {

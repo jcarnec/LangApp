@@ -8,7 +8,6 @@ interface TranslationModal {}
 
     const [modalVisible, setModalVisible] = useState(false);
 
-    // TASK (press modal) change is so this only shows up when translation is set
     useEffect(() => {
         console.log(props.selectedWord);
         if(props.translation.length > 0)

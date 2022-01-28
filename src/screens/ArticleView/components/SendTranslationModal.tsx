@@ -28,11 +28,6 @@ const SendTranslationModal = (props: any) => {
             Send the request for the following word:
           </Text>
           <Text style={styles.modalText}>{props.selectedWord}</Text>
-          {/* TASK (press modal) On press translation is set and the translation modal shows up
-            
-            
-            */}
-
           <Pressable
             style={[styles.button, styles.buttonClose]}
             onPress={() => {

@@ -58,7 +58,6 @@ function renderTranslated(props: any) {
         onValueChange={(itemValue) => {
           return (
             axios
-              // COMPLETE (target language) Done Here we need to set the target language
               .post(postTranslateUrl(), {
                 params: {
                   uid: getAuth().currentUser?.uid,

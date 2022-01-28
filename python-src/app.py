@@ -44,15 +44,17 @@ def sentence_splitting(self, text: str, lang: str = None):
     return sentences
 
 
+# TASK interest per language
 @app.route('/updateInterest', methods=['POST'])
 def create():
     id = request.json['params']['uid']
+    language = request.json['params']['language']['itemValue']
     category = request.json['params']['category']
     dict = {}
     bool = False
     try:
         dict = users_ref.document(id).collection(
-            'subscriptions').document('interests').get().to_dict()
+            'subscriptions').document('language').collection(language).document('interests').get().to_dict()
     except:
         dict = {}
 
@@ -60,32 +62,37 @@ def create():
         dict = {}
 
     try:
-        bool = users_ref.document(id).collection('subscriptions').document(
+        bool = users_ref.document(id).collection('subscriptions').document('language').collection(language).document(
             'interests').get().to_dict()[category]
     except:
         bool = False
     shouldSubscribe = not bool
     dict[category] = shouldSubscribe
     users_ref.document(id).collection(
-        'subscriptions').document('interests').set(dict)
+        'subscriptions').document('language').collection(language).document('interests').set(dict)
 
     # Now that interests have been logged get rss links and add them to subscriptions
     if(shouldSubscribe):
         url = getInterestRSS(category)
-        users_ref.document(id).collection('subscriptions').document(
-            'RSSLinks').set({category: url})
+        try:
+            users_ref.document(id).collection('subscriptions').document('language').collection(language).document(
+                'RSSLinks').update({category: url})
+        except:
+            users_ref.document(id).collection('subscriptions').document('language').collection(language).document(
+                'RSSLinks').set({category: url})
 
     return jsonify({"success": True}), 200
 
 
+# TASK interest per language
 @app.route('/getInterestsRSS', methods=['POST'])
 def read():
     id = request.json['params']['uid']
-    language = request.json['params']['language']
+    language = request.json['params']['language']['itemValue']
     RSSUrl = users_ref.document(id).collection(
-        'subscriptions').document('RSSLinks').get().to_dict()
+        'subscriptions').document('language').collection(language).document('RSSLinks').get().to_dict()
     urlKey = list(RSSUrl.keys())[0]
-    url = RSSUrl[urlKey] + language['itemValue']
+    url = RSSUrl[urlKey] + language
 
     return (jsonify({'url': url}), 200)
 

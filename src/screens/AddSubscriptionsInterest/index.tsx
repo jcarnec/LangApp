@@ -4,7 +4,7 @@ import { Text, View, Image, TouchableHighlight, TextInput } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { homeScreenProps } from "../../../global";
 import styles from "./styles";
-import { getUpdateInterestUrl } from "./api";
+import { getLanguagePairUrl, getLearningUrl, getUpdateInterestUrl } from "./api";
 import { getAuth } from "firebase/auth";
 
 const interests = [
@@ -27,22 +27,31 @@ export default function AddSubscriptionsInterestScreen({
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            console.log(getUpdateInterestUrl());
             axios
-              .post(getUpdateInterestUrl(), {
-                params: { 
+              .post(getLearningUrl(), {
+                params: {
                   uid: getAuth().currentUser?.uid,
-                  category: props.title
                 },
               })
-              .then((response) => {
-                console.log(response);
-              })
-              .catch((e) => {
-                alert(e)
-                throw e
+              .then((l) => {
+                axios
+                  .post(getUpdateInterestUrl(), {
+                    params: {
+                      uid: getAuth().currentUser?.uid,
+                      category: props.title,
+                      language: l.data,
+                    },
+                  })
+                  .then((response) => {
+                    console.log(response);
+                  })
+                  .catch((e) => {
+                    alert(e);
+                    throw e;
+                  });
               });
-          }}
+          }
+        }
         >
           <Text style={styles.buttonTitle}>{props.title}</Text>
         </TouchableOpacity>

@@ -1,0 +1,2 @@
+ export const CHANGE_LEARNING = 'CHANGE_LEARNING'   
+ export const CHANGE_TRANSLATE = 'CHANGE_TRANSLATE'   

@@ -2,18 +2,18 @@ import { StackScreenProps } from '@react-navigation/stack';
 
 type StackParamList = {
   Home: any;
-  Login: undefined;
-  Registration: undefined;
-  Subscriptions: undefined;
-  ClozemasterScreen: undefined;
-  SubscriptionsScreen: undefined;
-  AddKeyWord : undefined;
-  AddInterest: undefined;
-  AddSubscriptionsTabs: undefined;
+  Login: any;
+  Registration: any;
+  Subscriptions: any;
+  ClozemasterScreen: any;
+  SubscriptionsScreen: any;
+  AddKeyWord : any;
+  AddInterest: any;
+  AddSubscriptionsTabs: any;
   ArticleView: any;
   ArticlesStack: any;
   Settings: any;
-  "Articles": undefined;
+  "Articles": any;
 };
 
 type loginScreenProps = StackScreenProps<RootStackParamList, 'Login'>;

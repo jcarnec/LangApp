@@ -3,8 +3,10 @@ import React, { SetStateAction, useEffect, useState } from "react";
 import { styles } from "./styles";
 import SettingsList from "./components/SettingsList";
 import axios from "axios";
-import { getLanguagePairUrl, getLearningUrl } from "../AddSubscriptionsInterest/api";
+import { getLanguagePairUrl} from "../AddSubscriptionsInterest/api";
 import { getAuth } from "firebase/auth";
+import { mapDispatchToProps, mapStateToProps } from "../../redux/bindings";
+import { connect } from "react-redux";
 
 const SettingsScreen = (props: any) => {
 
@@ -34,29 +36,39 @@ const SettingsScreen = (props: any) => {
     },
   ];
 
-  useEffect(() => {
+  function updateSettings() {
     axios
       .post(getLanguagePairUrl(), {
         params: {
           uid: getAuth().currentUser?.uid,
         },
       })
-      .then((l: any) => {
-        if (settingsData[0].extra.learning) {
-          console.log("TCL: SettingsScreen -> l.data[0]", l.data[0])
-          settingsData[0].extra.learning.language[1](
-            l.data[0]
-          );
-        }
-
-
-        if (settingsData[0].extra.translate) {
-          console.log("TCL: SettingsScreen -> l.data[1]", l.data[1])
-          settingsData[0].extra.translate.language[1](
-            l.data[1]
-          );
-        }
+      .then((l) => {
+        props.changeLearning(l.data[0]);
+        props.changeTranslate(l.data[1])
       });
+
+  }
+  useEffect(() => {
+
+    // TASK (redux settings) temporary to load it in
+    updateSettings()
+
+    // TASK (redux settings) Done
+
+    
+    if (settingsData[0].extra.learning) {
+      settingsData[0].extra.learning.language[1](
+        props.settings.learning
+      );
+    }
+
+
+    if (settingsData[0].extra.translate) {
+      settingsData[0].extra.translate.language[1](
+        props.settings.translate
+      );
+    }
   }, []);
 
   return (
@@ -66,4 +78,4 @@ const SettingsScreen = (props: any) => {
   );
 };
 
-export default SettingsScreen;
+export default connect(mapStateToProps, mapDispatchToProps)(SettingsScreen);

@@ -44,11 +44,10 @@ def sentence_splitting(self, text: str, lang: str = None):
     return sentences
 
 
-# TASK interest per language
 @app.route('/updateInterest', methods=['POST'])
 def create():
     id = request.json['params']['uid']
-    language = request.json['params']['language']['itemValue']
+    language = request.json['params']['language']
     category = request.json['params']['category']
     dict = {}
     bool = False
@@ -84,11 +83,10 @@ def create():
     return jsonify({"success": True}), 200
 
 
-# TASK interest per language
 @app.route('/getInterestsRSS', methods=['POST'])
 def read():
     id = request.json['params']['uid']
-    language = request.json['params']['language']['itemValue']
+    language = request.json['params']['language']
     RSSUrl = users_ref.document(id).collection(
         'subscriptions').document('language').collection(language).document('RSSLinks').get().to_dict()
     urlKey = list(RSSUrl.keys())[0]

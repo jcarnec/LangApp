@@ -13,33 +13,29 @@ import { XMLParser } from "fast-xml-parser";
 import Articles from "./components/Articles";
 import { SplashScreen } from "../SplashScreen";
 import { useIsFocused } from "@react-navigation/native";
+import { connect } from "react-redux";
+import { mapDispatchToProps, mapStateToProps } from "../../redux/bindings";
 
-export default function ArticlesScreen({ navigation }: homeScreenProps) {
+function ArticlesScreen(props: any) {
   const [articles, setArticles] = useState(Object);
   const [articlesLoaded, setArticlesLoaded] = useState(false);
- const isFocused = useIsFocused();
+  const isFocused = useIsFocused();
 
-  // listen for isFocused, if useFocused changes 
+  // listen for isFocused, if useFocused changes
   // call the function that you use to mount the component.
 
   useEffect(() => {
-    getArticles()
-  },[isFocused]);
+    getArticles();
+  }, [isFocused]);
 
   function getArticles() {
-     axios
-      .post(getLearningUrl(), {
+    // TASK (redux settings) Done
+    axios
+      .post(getInterestsRSSUrl(), {
         params: {
           uid: getAuth().currentUser?.uid,
+          language: props.settings.learning,
         },
-      })
-      .then((l) => {
-        return axios.post(getInterestsRSSUrl(), {
-          params: {
-            uid: getAuth().currentUser?.uid,
-            language: l.data,
-          },
-        });
       })
       .then((result: any) => {
         let url = result.data.url;
@@ -58,13 +54,12 @@ export default function ArticlesScreen({ navigation }: homeScreenProps) {
       })
       .catch((reason) => {
         alert(reason);
-        throw reason
+        throw reason;
       });
-   
   }
 
   useEffect(() => {
-    getArticles()
+    getArticles();
   }, []);
 
   if (!articlesLoaded) {
@@ -72,8 +67,10 @@ export default function ArticlesScreen({ navigation }: homeScreenProps) {
   } else {
     return (
       <View>
-        <Articles articles={articles} navigation={navigation}></Articles>
+        <Articles articles={articles} navigation={props.navigation}></Articles>
       </View>
     );
   }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(ArticlesScreen);

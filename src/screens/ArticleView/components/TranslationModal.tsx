@@ -9,7 +9,6 @@ interface TranslationModal {}
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
-        console.log(props.selectedWord);
         if(props.translation.length > 0)
         setModalVisible(true);
     }, [props.translation]);

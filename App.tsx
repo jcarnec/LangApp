@@ -20,10 +20,15 @@ import ArticlesScreen from "./src/screens/Articles";
 import SubscriptionsScreen from "./src/screens/Subscriptions";
 import ArticleView from "./src/screens/ArticleView";
 import SettingsScreen from "./src/screens/Settings";
+import settingsReducer from "./src/redux/reducers"
+import DrawerContent from "./src/screens/DrawerContent";
+import { Provider } from "react-redux";
+import { createStore } from "redux";
 
 const TabNav = createBottomTabNavigator<StackParamList>();
 const Stack = createStackNavigator<StackParamList>();
 const Drawer = createDrawerNavigator<StackParamList>();
+const store = createStore(settingsReducer)
 
 function AddSubscriptionsTabs(props: any) {
   return (
@@ -31,12 +36,12 @@ function AddSubscriptionsTabs(props: any) {
       <TabNav.Screen
         name="AddKeyWord"
         component={AddSubscriptionsKeyWordScreen}
-        options={{ headerShown: false, title: "Add a Key Word"}}
+        options={{ headerShown: false, title: "Add a Key Word" }}
       />
       <TabNav.Screen
         name="AddInterest"
         component={AddSubscriptionsInterestScreen}
-        options={{ headerShown: false, title: "Add an interest"}}
+        options={{ headerShown: false, title: "Add an interest" }}
       />
     </TabNav.Navigator>
   );
@@ -53,14 +58,14 @@ function SubscriptionsStack(props: any) {
       <Stack.Screen
         name="AddSubscriptionsTabs"
         component={AddSubscriptionsTabs}
-        options={({ headerShown: false, title: "Add a subscription" })}
+        options={{ headerShown: false, title: "Add a subscription" }}
       />
     </Stack.Navigator>
   );
 }
 
 function ArticlesStack(props: any) {
-  return(
+  return (
     <Stack.Navigator>
       <Stack.Screen
         name="Articles"
@@ -73,29 +78,31 @@ function ArticlesStack(props: any) {
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
-  )
+  );
 }
 
 function Home(props: any) {
   return (
-    <Drawer.Navigator>
-      <Drawer.Screen name="Subscriptions" component={SubscriptionsStack} />
-      <Drawer.Screen
-        name="AddSubscriptionsTabs"
-        component={AddSubscriptionsTabs}
-        options={({ title: "Add a subscription" })}
-      />
-      <Drawer.Screen name="ClozemasterScreen" component={ClozemasterScreen} />
-      <Drawer.Screen name="ArticlesStack" component={ArticlesStack} />
-      <Drawer.Screen name="Settings" component={SettingsScreen} />
-    </Drawer.Navigator>
+      <Drawer.Navigator
+        // drawerContent={(props) => <DrawerContent></DrawerContent>}
+      >
+        <Drawer.Screen name="Subscriptions" component={SubscriptionsStack} />
+        <Drawer.Screen
+          name="AddSubscriptionsTabs"
+          component={AddSubscriptionsTabs}
+          options={{ title: "Add a subscription" }}
+        />
+        <Drawer.Screen name="ClozemasterScreen" component={ClozemasterScreen} />
+        <Drawer.Screen name="ArticlesStack" component={ArticlesStack} />
+        <Drawer.Screen name="Settings" component={SettingsScreen} />
+      </Drawer.Navigator>
   );
 }
 export default function App() {
   console.log(app.name, "has rebooted");
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(getAuth().currentUser);
-  
+
   onAuthStateChanged(getAuth(), (user) => {
     if (user) {
       setUser(user);
@@ -110,6 +117,7 @@ export default function App() {
     return <SplashScreen />;
   } else {
     return (
+      <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator>
           {user ? (
@@ -129,6 +137,7 @@ export default function App() {
           )}
         </Stack.Navigator>
       </NavigationContainer>
+    </Provider>
     );
   }
 }

@@ -1,4 +1,5 @@
 import React, { useRef, ReactNode, useEffect, useState } from "react";
+import { connect } from "react-redux";
 import {
   ScrollView,
   View,
@@ -19,8 +20,9 @@ import { getLanguagePairUrl } from "../AddSubscriptionsInterest/api";
 import { getAuth } from "firebase/auth";
 import SendTranslationModal from "./components/SendTranslationModal";
 import { Modalize } from "react-native-modalize";
+import { mapDispatchToProps, mapStateToProps } from "../../redux/bindings";
 
-function ArticleView({ route, navigation }: homeScreenProps) {
+function ArticleView(props: any) {
   const [selectedWords, setSelectedWord] = useState("");
   const [pendingSelectedWords, setPendingSelectedWords] = useState("");
   const [translation, setTranslation] = useState("");
@@ -31,19 +33,13 @@ function ArticleView({ route, navigation }: homeScreenProps) {
   
 
   const sendTranslation = () => {
-    axios
-      .post(getLanguagePairUrl(), {
-        params: {
-          uid: getAuth().currentUser?.uid,
-        },
-      })
-      .then((l) => {
+    // TASK (redux settings) Done
         axios
           .post(getTranslationUrl(), {
             params: {
               sentence: pendingSelectedWords,
-              learningLanguage: l.data[0],
-              translateLanguage: l.data[1],
+              learningLanguage: props.settings.learning,
+              translateLanguage: props.settings.translate,
             },
           })
           .then((response) => {
@@ -54,7 +50,6 @@ function ArticleView({ route, navigation }: homeScreenProps) {
             alert(e);
             throw e;
           });
-      });
   };
 
   const runFirst = `
@@ -97,7 +92,7 @@ function ArticleView({ route, navigation }: homeScreenProps) {
 
       <WebView
         style={styles.WebView}
-        source={{ uri: route.params.url }}
+        source={{ uri: props.route.params.url }}
         onMessage={(event) => {
           setPendingSelectedWords(event.nativeEvent.data);
         }}
@@ -111,4 +106,4 @@ function ArticleView({ route, navigation }: homeScreenProps) {
   );
 }
 
-export default ArticleView;
+export default connect(mapStateToProps, mapDispatchToProps)(ArticleView);

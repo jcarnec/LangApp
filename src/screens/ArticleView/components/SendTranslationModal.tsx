@@ -8,7 +8,6 @@ const SendTranslationModal = (props: any) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    console.log(props.selectedWord);
     if (props.selectedWord.length > 0) setModalVisible(true);
   }, [props.selectedWord]);
 

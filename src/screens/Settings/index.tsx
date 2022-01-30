@@ -71,6 +71,12 @@ const SettingsScreen = (props: any) => {
     }
   }, []);
 
+  useEffect(() => {
+    props.changeLearning(settingsData[0].extra.learning?.language[0])
+    props.changeTranslate(settingsData[0].extra.translate?.language[0])
+  }, [settingsData[0].extra.learning?.language[0], settingsData[0].extra.translate?.language[0]]);
+  
+
   return (
     <View style={{ flex: 1 }}>
       <SettingsList settingsData={settingsData}></SettingsList>

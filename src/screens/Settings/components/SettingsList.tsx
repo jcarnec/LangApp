@@ -20,7 +20,6 @@ function renderLearning(props: any) {
         selectedValue={props.section.extra.learning.language[0]}
         style={{ height: 50, width: 150 }}
         onValueChange={(itemValue) => {
-          // TASK Figure out how to fix this
           axios
             .post(postLearningUrl(), {
               params: {
@@ -55,22 +54,23 @@ function renderTranslated(props: any) {
       <Picker
         selectedValue={props.section.extra.translate.language[0]}
         style={{ height: 50, width: 150 }}
-        // TASK Figure out how to fix this
         onValueChange={(itemValue) => {
-          return axios
-            .post(postTranslateUrl(), {
-              params: {
-                uid: getAuth().currentUser?.uid,
-                language: itemValue,
-              },
-            })
-            .then((l) => {
-              props.section.extra.translate.language[1](itemValue);
-            })
-            .catch((e) => {
-              alert(e);
-              throw e;
-            });
+          return (
+            axios
+              .post(postTranslateUrl(), {
+                params: {
+                  uid: getAuth().currentUser?.uid,
+                  language: itemValue,
+                },
+              })
+              .then((l) => {
+                props.section.extra.translate.language[1](itemValue);
+              })
+              .catch((e) => {
+                alert(e);
+                throw e;
+              })
+          );
         }}
       >
         <Picker.Item label="French" value="fr" />

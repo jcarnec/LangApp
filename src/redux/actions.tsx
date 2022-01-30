@@ -8,3 +8,6 @@ export const changeTranslateAction = (changeTranslate: any) => ({
   type: "CHANGE_TRANSLATE",
   payload: changeTranslate,
 })
+
+
+

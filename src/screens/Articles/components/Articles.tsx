@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { Text, View, Image, TouchableHighlight, TextInput, Pressable } from "react-native";
 import { FlatList, ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 
-function Article(props: any) {
+export function Article(props: any) {
   // title:'Novak Djokovic lands in Dubai, then takes flight to native Serbia after deportation from Australia - ESPN'
   // source:'ESPN'
   // pubDate:'Mon, 17 Jan 2022 06:15:57 GMT'

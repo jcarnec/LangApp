@@ -2,7 +2,7 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { loginScreenProps } from "../../../global";
-import styles from "./styles";
+import styles from "../styles";
 
 export default function LoginScreen({ navigation }: loginScreenProps) {
   const [email, setEmail] = useState("");

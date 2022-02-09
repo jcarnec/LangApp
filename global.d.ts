@@ -7,9 +7,11 @@ type StackParamList = {
   Subscriptions: any;
   ClozemasterScreen: any;
   SubscriptionsScreen: any;
+  AddSubscriptionsScreen: any;
+  AddInterestsScreen: any;
   AddKeyWord : any;
   AddInterest: any;
-  AddSubscriptionsTabs: any;
+  AddSubscriptions: any;
   ArticleView: any;
   ArticlesStack: any;
   Settings: any;

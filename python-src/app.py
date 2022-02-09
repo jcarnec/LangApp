@@ -4,6 +4,7 @@
 import subprocess
 import os
 from sys import stdout
+from unittest import case
 from flask import Flask, request, jsonify
 from firebase_admin import credentials, firestore, initialize_app
 from flask_cors import CORS, cross_origin
@@ -12,9 +13,14 @@ import requests
 
 useShell = True
 
-def getInterestRSS(category):
+def getInterestLink(category):
     return 'https://news.google.com/rss/headlines/section/topic/' + category + '?hl='
 
+def getKeywordUrl(keyword):
+    return 'https://news.google.com/rss/search?q=' + keyword + '&hl='
+
+def getWebsiteUrl(website):
+    return 'https://news.google.com/rss/search?q=allinurl:' + website + '&hl='
 
 # Initialize model
 model = EasyNMT('opus-mt')
@@ -44,8 +50,29 @@ def sentence_splitting(self, text: str, lang: str = None):
     return sentences
 
 
+
+
+
+@app.route('/updateKeyword', methods=['POST'])
+def updateKeyword():
+    id = request.json['params']['uid']
+    language = request.json['params']['language']
+    keyWord = request.json['params']['keyword']
+    url = getKeywordUrl(keyWord)
+
+    try:
+        users_ref.document(id).collection('subscriptions').document('language').collection(language).document(
+            'keywordLinks').update({keyWord: url})
+    except:
+        users_ref.document(id).collection('subscriptions').document('language').collection(language).document(
+            'keywordLinks').set({keyWord: url})
+
+    return jsonify({'url': url + language}), 200
+
+
+
 @app.route('/updateInterest', methods=['POST'])
-def create():
+def updateInterest():
     id = request.json['params']['uid']
     language = request.json['params']['language']
     category = request.json['params']['category']
@@ -70,25 +97,71 @@ def create():
     users_ref.document(id).collection(
         'subscriptions').document('language').collection(language).document('interests').set(dict)
 
-    # Now that interests have been logged get rss links and add them to subscriptions
-    if(shouldSubscribe):
-        url = getInterestRSS(category)
-        try:
-            users_ref.document(id).collection('subscriptions').document('language').collection(language).document(
-                'RSSLinks').update({category: url})
-        except:
-            users_ref.document(id).collection('subscriptions').document('language').collection(language).document(
-                'RSSLinks').set({category: url})
-
-    return jsonify({"success": True}), 200
+    return jsonify({'url': getInterestLink(category) + language, 'subscribed': shouldSubscribe}), 200
 
 
-@app.route('/getInterestsRSS', methods=['POST'])
-def read():
+
+@app.route('/updateWebsite', methods=['POST'])
+def updateWebsite():
+    id = request.json['params']['uid']
+    language = request.json['params']['language']
+    website = request.json['params']['website']
+    url = getWebsiteUrl(website)
+
+    try:
+        users_ref.document(id).collection('subscriptions').document('language').collection(language).document(
+            'websiteLinks').update({str(website): url})
+    except:
+        users_ref.document(id).collection('subscriptions').document('language').collection(language).document(
+            'websiteLinks').set({str(website): url})
+
+    return jsonify({'url': url + language}), 200
+
+
+@app.route('/getKeyword', methods=['POST'])
+def getKeyword():
     id = request.json['params']['uid']
     language = request.json['params']['language']
     RSSUrl = users_ref.document(id).collection(
-        'subscriptions').document('language').collection(language).document('RSSLinks').get().to_dict()
+        'subscriptions').document('language').collection(language).document('keywordLinks').get().to_dict()
+    urlKey = list(RSSUrl.keys())[0]
+    url = RSSUrl[urlKey] + language
+
+    return (jsonify({'url': url}), 200)
+
+
+@app.route('/getInterestsRSS', methods=['POST'])
+def getInterest():
+    id = request.json['params']['uid']
+    language = request.json['params']['language']
+    RSSUrl = users_ref.document(id).collection(
+        'subscriptions').document('language').collection(language).document('interests').get().to_dict()
+    urlKey = list(RSSUrl.keys())[0]
+    url = getInterestLink(urlKey) + language
+
+    return (jsonify({'url': url}), 200)
+
+
+@app.route('/subscribedTo', methods=['POST'])
+def getSubscribedTo():
+    id = request.json['params']['uid']
+    language = request.json['params']['language']
+    resultDict = users_ref.document(id).collection(
+        'subscriptions').document('language').collection(language).document('interests').get().to_dict()
+    
+
+    return (jsonify({'dict': resultDict}), 200)
+
+
+
+
+
+@app.route('/getWebsite', methods=['POST'])
+def getWebsit():
+    id = request.json['params']['uid']
+    language = request.json['params']['language']
+    RSSUrl = users_ref.document(id).collection(
+        'subscriptions').document('language').collection(language).document('websiteLinks').get().to_dict()
     urlKey = list(RSSUrl.keys())[0]
     url = RSSUrl[urlKey] + language
 
@@ -123,6 +196,28 @@ def getTranslate():
         'language').document('translateLanguage').get().to_dict()
     return (jsonify(language), 200)
 
+# TASK change here
+@app.route('/getSubs', methods=['POST'])
+def getSubs():
+    id = request.json['params']['uid']
+    language = request.json['params']['language']
+    result = users_ref.document(id).collection('subscriptions').document('language').collection(language)
+    array_of_links = []
+    for r in result.get(): 
+        print(r.id)
+        print(r.to_dict())
+        d = r.to_dict()
+        for k in d: 
+            v = d[k]
+            if(r.id == 'interests'):
+                if(v):
+                    array_of_links.append({'type': r.id, 'key': k, 'link': getInterestLink(k) + language})
+            elif(r.id == 'keywordLinks'):
+                array_of_links.append({'type': r.id, 'key': k, 'link': v + language})
+            elif(r.id == 'websiteLinks'):
+                array_of_links.append({'type': r.id, 'key': k, 'link': v + language})
+    
+    return jsonify({'result': array_of_links}), 200
 
 @app.route('/getLearning', methods=['POST'])
 def getLearning():

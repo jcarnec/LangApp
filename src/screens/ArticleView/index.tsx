@@ -14,9 +14,9 @@ import axios from "axios";
 import { getTranslationUrl } from "./api";
 import { SplashScreen } from "../SplashScreen";
 import { WebView } from "react-native-webview";
-import { styles } from "./styles";
+import styles from "../styles";
 import TranslationModal from "./components/TranslationModal";
-import { getLanguagePairUrl } from "../AddSubscriptionsInterest/api";
+import { getLanguagePairUrl } from "../AddSubscriptions/api";
 import { getAuth } from "firebase/auth";
 import SendTranslationModal from "./components/SendTranslationModal";
 import { Modalize } from "react-native-modalize";
@@ -33,7 +33,6 @@ function ArticleView(props: any) {
   
 
   const sendTranslation = () => {
-    // TASK (redux settings) Done
         axios
           .post(getTranslationUrl(), {
             params: {
@@ -79,16 +78,6 @@ function ArticleView(props: any) {
   return (
     <View style={styles.pageView}>
       <Modalize ref={modalizeRef}></Modalize>
-      {/* <TranslationModal
-        selectedWord={selectedWord}
-        translation={translation}
-      ></TranslationModal>
-
-      <SendTranslationModal
-        selectedWord={selectedWord}
-        translation={translation}
-        onPressFunction={sendTranslation}
-      ></SendTranslationModal> */}
 
       <WebView
         style={styles.WebView}

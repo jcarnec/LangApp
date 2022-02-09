@@ -1,9 +1,8 @@
 import { View, Text, SectionList } from "react-native";
 import React, { SetStateAction, useEffect, useState } from "react";
-import { styles } from "./styles";
 import SettingsList from "./components/SettingsList";
 import axios from "axios";
-import { getLanguagePairUrl} from "../AddSubscriptionsInterest/api";
+import { getLanguagePairUrl} from "../AddSubscriptions/api";
 import { getAuth } from "firebase/auth";
 import { mapDispatchToProps, mapStateToProps } from "../../redux/bindings";
 import { connect } from "react-redux";
@@ -17,12 +16,12 @@ const SettingsScreen = (props: any) => {
       data: ["Learning", "Translated"],
       extra: {
         learning: {
-          title: "Current Language",
-          description: "Select the current language you want to practice.",
+          title: "Learning",
+          description: "Select the language you want to read and practice.",
           language: useState(""),
         },
         translate: {
-          title: "Language translate into",
+          title: "Translated into",
           description: "Select the language to translate text into.",
           language: useState(""),
         },
@@ -51,18 +50,13 @@ const SettingsScreen = (props: any) => {
   }
   useEffect(() => {
 
-    // TASK (redux settings) temporary to load it in
     updateSettings()
-
-    // TASK (redux settings) Done
-
     
     if (settingsData[0].extra.learning) {
       settingsData[0].extra.learning.language[1](
         props.settings.learning
       );
     }
-
 
     if (settingsData[0].extra.translate) {
       settingsData[0].extra.translate.language[1](

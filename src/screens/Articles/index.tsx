@@ -6,61 +6,60 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { homeScreenProps } from "../../../global";
 import {
   getInterestsRSSUrl,
+  getKeywordUrl,
   getLearningUrl,
-} from "../AddSubscriptionsInterest/api";
-import styles from "./styles";
+  getWebsiteUrl,
+} from "../AddSubscriptions/api";
 import { XMLParser } from "fast-xml-parser";
 import Articles from "./components/Articles";
 import { SplashScreen } from "../SplashScreen";
 import { useIsFocused } from "@react-navigation/native";
 import { connect } from "react-redux";
 import { mapDispatchToProps, mapStateToProps } from "../../redux/bindings";
+import { unReplaceDot } from "../../global/utils";
 
 function ArticlesScreen(props: any) {
-  const [articles, setArticles] = useState(Object);
+  const [articles, setArticles] = useState<any[]>([]);
   const [articlesLoaded, setArticlesLoaded] = useState(false);
-  const isFocused = useIsFocused();
-
-  // listen for isFocused, if useFocused changes
-  // call the function that you use to mount the component.
-
-  useEffect(() => {
-    getArticles();
-  }, [isFocused]);
 
   function getArticles() {
-    // TASK (redux settings) Done
-    axios
-      .post(getInterestsRSSUrl(), {
-        params: {
-          uid: getAuth().currentUser?.uid,
-          language: props.settings.learning,
-        },
-      })
-      .then((result: any) => {
-        let url = result.data.url;
-        return axios.get(url);
-      })
-      .then((response) => {
-        let parser = new XMLParser();
-        let obj = parser.parse(response.data);
-        if (obj.rss.channel.item) {
-          setArticles(obj.rss.channel.item);
-          setArticlesLoaded(true);
-        } else {
-          alert("The articles were not loaded properly");
-          throw "rss.channel is not truthy";
-        }
-      })
-      .catch((reason) => {
-        alert(reason);
-        throw reason;
-      });
+    let subscriptions
+    if(props.route.params.subscription.length) {
+      subscriptions = [...props.route.params.subscription];
+    } else {
+      subscriptions = [props.route.params.subscription]
+    }
+
+
+    subscriptions.forEach((element) => {
+
+      let url = unReplaceDot(element.link);
+      axios
+        .get(url)
+        .then((response) => {
+          let parser = new XMLParser();
+          let obj = parser.parse(response.data);
+          if (obj.rss.channel.item) {
+            setArticles(old => [...old, ...obj.rss.channel.item]);
+          } else {
+            throw "rss.channel is not truthy";
+          }
+        })
+        .catch((reason) => {
+          
+        });
+    });
+    setArticlesLoaded(true);
   }
 
   useEffect(() => {
+    setArticlesLoaded(false);
+    setArticles([])
     getArticles();
-  }, []);
+    console.log(
+      articles
+    )
+  }, [props.route.params.subscription]);
 
   if (!articlesLoaded) {
     return <SplashScreen></SplashScreen>;

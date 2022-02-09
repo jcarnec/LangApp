@@ -1,5 +1,5 @@
 {
-    "workbench.colorTheme": "monokai-charcoal (yellow)",
+    "workbench.colorTheme": "monokai-charcoal (purple)",
     "todo-tree.tree.scanMode": "workspace",
     "todo-tree.filtering.excludeGlobs": [
         "**/api-env"

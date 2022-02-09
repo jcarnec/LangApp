@@ -11,58 +11,45 @@ import { app } from "./src/firebase/config";
 import { HomeScreen, LoginScreen, RegistrationScreen } from "./src/screens";
 import ClozemasterScreen from "./src/screens/Clozemaster";
 import { SplashScreen } from "./src/screens/SplashScreen";
-import AddSubscriptionsInterestScreen from "./src/screens/AddSubscriptionsInterest";
+import AddSubscriptionsScreen from "./src/screens/AddSubscriptions";
 import { StyleSheet } from "react-native";
 import { useNavigationState } from "@react-navigation/native";
-import AddSubscriptionsKeyWordScreen from "./src/screens/AddSubscriptionsKeyWord";
 import AddArticlesScreen from "./src/screens/Articles";
 import ArticlesScreen from "./src/screens/Articles";
-import SubscriptionsScreen from "./src/screens/Subscriptions";
 import ArticleView from "./src/screens/ArticleView";
 import SettingsScreen from "./src/screens/Settings";
-import settingsReducer from "./src/redux/reducers"
+import settingsReducer from "./src/redux/reducers";
 import DrawerContent from "./src/screens/DrawerContent";
 import { Provider } from "react-redux";
 import { createStore } from "redux";
+import axios from "axios";
+import { getLanguagePairUrl } from "./src/screens/AddSubscriptions/api";
+import {
+  changeLearningAction,
+  changeTranslateAction,
+  changeShowHeader,
+} from "./src/redux/actions";
+import AddInterestsScreen from "./src/screens/AddSubscriptions/components/AddInterestsScreen";
+import { NavigationState } from "@react-navigation/core";
 
 const TabNav = createBottomTabNavigator<StackParamList>();
 const Stack = createStackNavigator<StackParamList>();
 const Drawer = createDrawerNavigator<StackParamList>();
-const store = createStore(settingsReducer)
 
-function AddSubscriptionsTabs(props: any) {
-  return (
-    <TabNav.Navigator>
-      <TabNav.Screen
-        name="AddKeyWord"
-        component={AddSubscriptionsKeyWordScreen}
-        options={{ headerShown: false, title: "Add a Key Word" }}
-      />
-      <TabNav.Screen
-        name="AddInterest"
-        component={AddSubscriptionsInterestScreen}
-        options={{ headerShown: false, title: "Add an interest" }}
-      />
-    </TabNav.Navigator>
-  );
-}
+const store = createStore(settingsReducer);
 
-function SubscriptionsStack(props: any) {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="SubscriptionsScreen"
-        component={SubscriptionsScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="AddSubscriptionsTabs"
-        component={AddSubscriptionsTabs}
-        options={{ headerShown: false, title: "Add a subscription" }}
-      />
-    </Stack.Navigator>
-  );
-}
+const getActiveRouteState = function (route: NavigationState): NavigationState {
+  if (
+    !route.routes ||
+    route.routes.length === 0 ||
+    route.index >= route.routes.length
+  ) {
+    return route;
+  }
+
+  const childActiveRoute = route.routes[route.index] as any;
+  return getActiveRouteState(childActiveRoute);
+};
 
 function ArticlesStack(props: any) {
   return (
@@ -81,23 +68,90 @@ function ArticlesStack(props: any) {
   );
 }
 
-function Home(props: any) {
+function SubscriptionsStack(props: any) {
   return (
-      <Drawer.Navigator
-        // drawerContent={(props) => <DrawerContent></DrawerContent>}
-      >
-        <Drawer.Screen name="Subscriptions" component={SubscriptionsStack} />
-        <Drawer.Screen
-          name="AddSubscriptionsTabs"
-          component={AddSubscriptionsTabs}
-          options={{ title: "Add a subscription" }}
-        />
-        <Drawer.Screen name="ClozemasterScreen" component={ClozemasterScreen} />
-        <Drawer.Screen name="ArticlesStack" component={ArticlesStack} />
-        <Drawer.Screen name="Settings" component={SettingsScreen} />
-      </Drawer.Navigator>
+    <Stack.Navigator>
+      <Stack.Screen
+        name="AddSubscriptionsScreen"
+        component={AddSubscriptionsScreen}
+        options={{ title: "Add a subscription", headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddInterestsScreen"
+        component={AddInterestsScreen}
+        options={{ title: "Add an interest", headerShown: true }}
+      />
+    </Stack.Navigator>
   );
 }
+
+function Home(props: any) {
+  const activeRoute = getActiveRouteState(props.navigation.getState());
+  // @ts-ignore
+  // console.log(activeRoute.state);
+
+  try {
+    if (
+      // @ts-ignore
+      activeRoute.state.index == 0 &&
+      // @ts-ignore
+      activeRoute.state.routes[0].state?.index == 1
+    ) {
+      // console.log("in interest");
+      store.dispatch(changeShowHeader(false));
+    } else {
+      // console.log("not in interests");
+      store.dispatch(changeShowHeader(true));
+    }
+  } catch {
+    // console.log("exception caught");
+  }
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios
+      .post(getLanguagePairUrl(), {
+        params: {
+          uid: getAuth().currentUser?.uid,
+        },
+      })
+      .then((l: any) => {
+        store.dispatch(changeLearningAction(l.data[0]));
+        store.dispatch(changeTranslateAction(l.data[1]));
+        setLoading(false)
+      });
+  }, []);
+
+
+  return (
+    <Provider store={store}>
+      { !loading ? (
+        <Drawer.Navigator
+          drawerContent={(props) => <DrawerContent {...props}></DrawerContent>}
+        >
+          <Drawer.Screen
+            name="AddSubscriptions"
+            component={SubscriptionsStack}
+            options={{
+              title: "Add a subscription",
+              headerShown: store.getState().nav.showHeader,
+            }}
+          />
+          <Drawer.Screen
+            name="ClozemasterScreen"
+            component={ClozemasterScreen}
+          />
+          <Drawer.Screen name="ArticlesStack" component={ArticlesStack} />
+          <Drawer.Screen name="Settings" component={SettingsScreen} />
+        </Drawer.Navigator>
+      ) : (
+        <></>
+      )}
+    </Provider>
+  );
+}
+
 export default function App() {
   console.log(app.name, "has rebooted");
   const [loading, setLoading] = useState(true);
@@ -117,7 +171,6 @@ export default function App() {
     return <SplashScreen />;
   } else {
     return (
-      <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator>
           {user ? (
@@ -137,7 +190,6 @@ export default function App() {
           )}
         </Stack.Navigator>
       </NavigationContainer>
-    </Provider>
     );
   }
 }

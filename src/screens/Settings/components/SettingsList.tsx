@@ -3,12 +3,10 @@ import { Text, View, StyleSheet, SectionList } from "react-native";
 import { Picker } from "@react-native-community/picker";
 import { useState } from "react";
 import axios from "axios";
-import {
-  postLearningUrl,
-  postTranslateUrl,
-} from "../../AddSubscriptionsInterest/api";
-import { getAuth } from "firebase/auth";
-
+import { postLearningUrl, postTranslateUrl } from "../../AddSubscriptions/api";
+import { getAuth, signOut } from "firebase/auth";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import mainStyles from '../../styles'
 function renderLearning(props: any) {
   let extraDict = props.section.extra.learning;
 
@@ -45,7 +43,7 @@ function renderLearning(props: any) {
 }
 
 function renderTranslated(props: any) {
-  let extraDict = props.section.extra.learning;
+  let extraDict = props.section.extra.translate;
 
   return (
     <View style={styles.item}>
@@ -55,22 +53,20 @@ function renderTranslated(props: any) {
         selectedValue={props.section.extra.translate.language[0]}
         style={{ height: 50, width: 150 }}
         onValueChange={(itemValue) => {
-          return (
-            axios
-              .post(postTranslateUrl(), {
-                params: {
-                  uid: getAuth().currentUser?.uid,
-                  language: itemValue,
-                },
-              })
-              .then((l) => {
-                props.section.extra.translate.language[1](itemValue);
-              })
-              .catch((e) => {
-                alert(e);
-                throw e;
-              })
-          );
+          return axios
+            .post(postTranslateUrl(), {
+              params: {
+                uid: getAuth().currentUser?.uid,
+                language: itemValue,
+              },
+            })
+            .then((l) => {
+              props.section.extra.translate.language[1](itemValue);
+            })
+            .catch((e) => {
+              alert(e);
+              throw e;
+            });
         }}
       >
         <Picker.Item label="French" value="fr" />
@@ -87,8 +83,25 @@ function RenderItem(props: any) {
       return renderLearning(props);
     case "Translated":
       return renderTranslated(props);
+    default:
+      return (
+        <TouchableOpacity
+          style={mainStyles.navButton}
+          onPress={() => {
+            const auth = getAuth();
+            signOut(auth)
+              .then(() => {
+                // Sign-out successful.
+              })
+              .catch((error) => {
+                // An error happened.
+              });
+          }}
+        >
+          <Text style={mainStyles.buttonTitle}>Logout</Text>
+        </TouchableOpacity>
+      );
   }
-  return <Text>{props.item}</Text>;
 }
 
 const SectionHeader = (props: any) => {

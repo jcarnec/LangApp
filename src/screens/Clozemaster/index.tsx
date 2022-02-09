@@ -9,7 +9,6 @@ import {
   initialState,
   reducer,
 } from "./api";
-import { styles } from "./styles";
 import shuffleArray from "./utils";
 
 let clozemasterPage = 1;
@@ -67,8 +66,6 @@ export default function ClozemasterScreen({ navigation }: homeScreenProps) {
   }
 
   function setSentences(passedSentences?: undefined) {
-    // We need to check that there are some sentences left in the list.
-    // TODO fetch the next in page
     if (!passedSentences && sentenceIndex >= sentences.length) {
       fetchSentences().then();
     } else {
@@ -95,10 +92,8 @@ export default function ClozemasterScreen({ navigation }: homeScreenProps) {
           setThreeWords(response.data.threeWords);
         })
         .catch((e) => {
-          console.log("failed to send request, maybe the ip is wrong.");
           alert(e)
           throw e
-          dispatch(actionCreators.failure());
         });
     }
   }
@@ -148,3 +143,34 @@ export default function ClozemasterScreen({ navigation }: homeScreenProps) {
     );
   }
 }
+
+
+import { StyleSheet } from 'react-native';
+
+let styles = StyleSheet.create({
+  buttonContainer: {
+    flex: 1,
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  buttonItems: {
+    width: "50%",
+    padding: 10,
+  },
+  textContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+  },
+  textItems: {
+    padding: 30,
+  },
+  getStartedContainer: {
+    alignItems: "center",
+    marginHorizontal: 50,
+  }, 
+  root: {
+      flex: 1
+  }
+});
+

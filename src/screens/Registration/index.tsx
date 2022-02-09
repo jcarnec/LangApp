@@ -4,7 +4,7 @@ import {
 import React, { useState } from "react";
 import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { registrationScreenProps } from "../../../global";
-import styles from "./styles";
+import styles from "../styles";
 
 
 export default function RegistrationScreen({

@@ -1,9 +1,8 @@
 import { bindActionCreators } from "redux";
-import { changeLearningAction, changeTranslateAction } from "./actions";
+import { changeLearningAction, changeTranslateAction, changeShowHeader } from "./actions";
 
 export const mapStateToProps = (state: any) => {
-  const { settings } = state;
-  return { settings };
+  return state
 };
 
 export const mapDispatchToProps = (dispatch: any) =>
@@ -11,6 +10,7 @@ export const mapDispatchToProps = (dispatch: any) =>
     {
       changeLearning: changeLearningAction,
       changeTranslate: changeTranslateAction,
+      changeShowHeader: changeShowHeader,
     },
     dispatch
   );

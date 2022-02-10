@@ -20,8 +20,19 @@ import {
   getTranslateUrl,
   listSubscriptions,
 } from "../../../AddSubscriptions/api";
+import {
+  ListItem,
+  Avatar,
+  Icon,
+  Badge,
+  ListItemProps,
+  Button,
+  Switch,
+  colors,
+} from "react-native-elements";
 
 const AddSubscription = (props: any) => {
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <View>
@@ -33,6 +44,41 @@ const AddSubscription = (props: any) => {
       >
         <Text>Subscriptions</Text>
       </TouchableOpacity>
+
+      {/* // TASK implement this list item */}
+      <ListItem.Accordion
+        content={
+          <>
+            <Icon name="place" size={30} tvParallaxProperties={undefined} />
+            <ListItem.Content>
+              <ListItem.Title>List Accordion</ListItem.Title>
+            </ListItem.Content>
+          </>
+        }
+        isExpanded={expanded}
+        onPress={() => {
+          setExpanded(!expanded);
+        }}
+      >
+        {props.subscriptions.length > 1 ? (
+          props.subscriptions.map((s: any, index: number) => (
+            <ListItem
+              key={index}
+              onPress={() => console.log("press")}
+              bottomDivider
+            >
+              <ListItem.Content>
+                <ListItem.Title>{s.key}</ListItem.Title>
+                <ListItem.Subtitle>{s.key}</ListItem.Subtitle>
+              </ListItem.Content>
+              <ListItem.Chevron tvParallaxProperties={undefined} />
+            </ListItem>
+          ))
+        ) : (
+          <></>
+        )}
+      </ListItem.Accordion>
+
       <ScrollView>
         {props.subscriptions.length > 1 ? (
           props.subscriptions.map((s: any, index: number) => (
@@ -42,7 +88,7 @@ const AddSubscription = (props: any) => {
               onPress={() => {
                 props.navigation.navigate("ArticlesStack", {
                   screen: "Articles",
-                  params: {subscription: s},
+                  params: { subscription: s },
                 });
               }}
             >

@@ -196,7 +196,6 @@ def getTranslate():
         'language').document('translateLanguage').get().to_dict()
     return (jsonify(language), 200)
 
-# TASK change here
 @app.route('/getSubs', methods=['POST'])
 def getSubs():
     id = request.json['params']['uid']

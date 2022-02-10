@@ -22,10 +22,6 @@ const interests = [
   "HEALTH",
 ];
 
-{
-  // TASK (toggle interest)
-}
-
 function AddInterestsScreen(props: any) {
   useEffect(() => {
     fetchSubscribed()

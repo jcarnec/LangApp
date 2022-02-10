@@ -35,7 +35,7 @@ const DrawerContent = (props: any) => {
   }, []);
 
   return (
-    <View style={localStyles.container}>
+    <ScrollView style={localStyles.container}>
       <Text style={localStyles.header}>
         The language you are learning is {props.settings.learning}
       </Text>
@@ -47,7 +47,7 @@ const DrawerContent = (props: any) => {
         ></AddSubscription>
         <GoToSettings {...props}></GoToSettings>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

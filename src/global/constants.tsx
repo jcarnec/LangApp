@@ -1,2 +1,2 @@
 
-export const ipv4Address = "192.168.45.71";
+export const ipv4Address = "192.168.0.122";

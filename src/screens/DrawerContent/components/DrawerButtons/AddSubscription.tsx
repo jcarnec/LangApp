@@ -29,29 +29,40 @@ import {
   Button,
   Switch,
   colors,
+  Overlay,
 } from "react-native-elements";
+import { unReplaceDot } from "../../../../global/utils";
 
 const AddSubscription = (props: any) => {
   const [expanded, setExpanded] = useState(false);
+  const [visible, setVisible] = useState(false);
 
+  const toggleOverlay = () => {
+    setVisible(!visible);
+  };
   return (
     <View>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => {
-          props.navigation.navigate("AddSubscriptions");
-        }}
-      >
-        <Text>Subscriptions</Text>
-      </TouchableOpacity>
-
-      {/* // TASK implement this list item */}
-      <ListItem.Accordion
+      <ListItem.Accordion 
+      bottomDivider
+      style={{marginLeft: 10}}
         content={
           <>
-            <Icon name="place" size={30} tvParallaxProperties={undefined} />
-            <ListItem.Content>
-              <ListItem.Title>List Accordion</ListItem.Title>
+            <Button
+              onPress={() => {
+                props.navigation.navigate("AddSubscriptions");
+              }}
+              icon={
+                <Icon
+                  name="plus"
+                  type="font-awesome"
+                  color="white"
+                  size={10}
+                  tvParallaxProperties={undefined}
+                />
+              }
+            />
+            <ListItem.Content style={{ paddingLeft: 10 }}>
+              <ListItem.Title>Subscriptions</ListItem.Title>
             </ListItem.Content>
           </>
         }
@@ -60,16 +71,25 @@ const AddSubscription = (props: any) => {
           setExpanded(!expanded);
         }}
       >
+        {
+          // TASK on long press unsbubscribe
+        }
         {props.subscriptions.length > 1 ? (
           props.subscriptions.map((s: any, index: number) => (
             <ListItem
               key={index}
-              onPress={() => console.log("press")}
+              onPress={() => {
+                props.navigation.navigate("ArticlesStack", {
+                  screen: "Articles",
+                  params: { subscription: s },
+                });
+              }}
+              onLongPress={toggleOverlay}
               bottomDivider
             >
               <ListItem.Content>
-                <ListItem.Title>{s.key}</ListItem.Title>
-                <ListItem.Subtitle>{s.key}</ListItem.Subtitle>
+                <ListItem.Title>{unReplaceDot(s.key)}</ListItem.Title>
+                <ListItem.Subtitle>{s.type}</ListItem.Subtitle>
               </ListItem.Content>
               <ListItem.Chevron tvParallaxProperties={undefined} />
             </ListItem>
@@ -78,27 +98,26 @@ const AddSubscription = (props: any) => {
           <></>
         )}
       </ListItem.Accordion>
-
-      <ScrollView>
-        {props.subscriptions.length > 1 ? (
-          props.subscriptions.map((s: any, index: number) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.button}
-              onPress={() => {
-                props.navigation.navigate("ArticlesStack", {
-                  screen: "Articles",
-                  params: { subscription: s },
-                });
-              }}
-            >
-              <Text>{s.key}</Text>
-            </TouchableOpacity>
-          ))
-        ) : (
-          <></>
-        )}
-      </ScrollView>
+      <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
+        <Text style={styles.textPrimary}>Hello!</Text>
+        <Text style={styles.textSecondary}>
+          Welcome to React Native Elements
+        </Text>
+        <Button
+          icon={
+            <Icon
+              name="wrench"
+              type="font-awesome"
+              color="white"
+              size={25}
+              iconStyle={{ marginRight: 10 }}
+              tvParallaxProperties={undefined}
+            />
+          }
+          title="Start Building"
+          onPress={toggleOverlay}
+        />
+      </Overlay>
     </View>
   );
 };
@@ -106,19 +125,23 @@ const AddSubscription = (props: any) => {
 export default connect(mapStateToProps, mapDispatchToProps)(AddSubscription);
 
 const styles = StyleSheet.create({
-  button: {
-    backgroundColor: "#788eec",
-    marginLeft: 30,
-    marginRight: 30,
-    marginTop: 20,
-    height: 48,
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   buttonTitle: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+  },
+
+  button: {
+    margin: 10,
+  },
+  textPrimary: {
+    marginVertical: 20,
+    textAlign: "center",
+    fontSize: 20,
+  },
+  textSecondary: {
+    marginBottom: 10,
+    textAlign: "center",
+    fontSize: 17,
   },
 });

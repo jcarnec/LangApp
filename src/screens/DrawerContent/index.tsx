@@ -16,6 +16,10 @@ import GoToArticles from "./components/DrawerButtons/GoToArticles";
 import GoToSettings from "./components/DrawerButtons/GoToSettings";
 import AddSubscription from "./components/DrawerButtons/AddSubscription";
 import styles from "../styles";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { ListItem } from "react-native-elements";
+import GoToClozemaster from "./components/DrawerButtons/GoToClozemaster";
+import { countryCodeString } from "../../global/utils";
 
 const DrawerContent = (props: any) => {
   const [subscriptions, setSubscriptions] = useState(Object);
@@ -29,25 +33,29 @@ const DrawerContent = (props: any) => {
         },
       })
       .then((l) => {
-        console.log("HERE: ", l.data.result)
+        console.log("HERE: ", l.data.result);
         setSubscriptions(l.data.result);
       });
   }, []);
 
   return (
-    <ScrollView style={localStyles.container}>
-      <Text style={localStyles.header}>
-        The language you are learning is {props.settings.learning}
-      </Text>
-      <View style={{ flex: 5 }}>
-        <GoToArticles subscriptions={subscriptions} {...props}></GoToArticles>
-        <AddSubscription
-          subscriptions={subscriptions}
-          {...props}
-        ></AddSubscription>
-        <GoToSettings {...props}></GoToSettings>
-      </View>
-    </ScrollView>
+    <View>
+      <ListItem bottomDivider>
+        <ListItem.Content style={{marginTop: 20}}>
+          <ListItem.Title h4>
+            The language you are learning is {countryCodeString(props.settings.learning)}
+          </ListItem.Title>
+        </ListItem.Content>
+      </ListItem>
+      <GoToArticles subscriptions={subscriptions} {...props}></GoToArticles>
+      <AddSubscription
+        subscriptions={subscriptions}
+        {...props}
+      ></AddSubscription>
+
+      <GoToClozemaster {...props}></GoToClozemaster>
+      <GoToSettings {...props}></GoToSettings>
+    </View>
   );
 };
 
@@ -60,10 +68,11 @@ const localStyles = StyleSheet.create({
   header: {
     alignContent: "center",
     marginTop: 100,
-    width: "70%",
+    width: "100%",
     flex: 1,
     fontSize: 16,
     color: "#2e2e2d",
+    textAlign: "center",
   },
 });
 

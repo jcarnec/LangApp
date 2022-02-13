@@ -34,6 +34,9 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  rne_button: {
+    margin: 10
+  },
   navButton: {
     backgroundColor: "#788eec",
     marginLeft: 30,

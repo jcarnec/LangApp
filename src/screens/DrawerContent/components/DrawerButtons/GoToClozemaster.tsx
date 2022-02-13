@@ -14,14 +14,11 @@ const GoToArticles = (props: any) => {
     <ListItem
       bottomDivider
       onPress={() => {
-        props.navigation.navigate("ArticlesStack", {
-          screen: "Articles",
-          params: { subscription: props.subscriptions },
-        });
+        props.navigation.navigate("ClozemasterScreen");
       }}
     >
       <ListItem.Content style={{ paddingLeft: 10 }}>
-        <ListItem.Title>Articles</ListItem.Title>
+        <ListItem.Title>Exercises</ListItem.Title>
       </ListItem.Content>
     </ListItem>
   );

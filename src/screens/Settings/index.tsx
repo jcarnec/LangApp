@@ -1,39 +1,19 @@
-import { View, Text, SectionList } from "react-native";
+import { View, Text, SectionList, TouchableOpacity } from "react-native";
 import React, { SetStateAction, useEffect, useState } from "react";
-import SettingsList from "./components/SettingsList";
 import axios from "axios";
-import { getLanguagePairUrl} from "../AddSubscriptions/api";
-import { getAuth } from "firebase/auth";
+import { getLanguagePairUrl } from "../AddSubscriptions/api";
+import { getAuth, signOut } from "firebase/auth";
 import { mapDispatchToProps, mapStateToProps } from "../../redux/bindings";
 import { connect } from "react-redux";
-
+import { ListItem, Button } from "react-native-elements";
+import RNPickerSelect from "react-native-picker-select";
+import style from "../styles"
+const languagesArray = [
+  { label: "French", value: "fr" },
+  { label: "Spanish", value: "es" },
+  { label: "English", value: "en" },
+];
 const SettingsScreen = (props: any) => {
-
-
-  let settingsData = [
-    {
-      title: "Language",
-      data: ["Learning", "Translated"],
-      extra: {
-        learning: {
-          title: "Learning",
-          description: "Select the language you want to read and practice.",
-          language: useState(""),
-        },
-        translate: {
-          title: "Translated into",
-          description: "Select the language to translate text into.",
-          language: useState(""),
-        },
-      },
-    },
-
-    {
-      title: "Account",
-      data: ["logout"],
-      extra: { title: "logout", description: "Logout of account" },
-    },
-  ];
 
   function updateSettings() {
     axios
@@ -43,37 +23,70 @@ const SettingsScreen = (props: any) => {
         },
       })
       .then((l) => {
+        console.log(props)
         props.changeLearning(l.data[0]);
-        props.changeTranslate(l.data[1])
+        props.changeTranslate(l.data[1]);
       });
-
   }
   useEffect(() => {
-
-    updateSettings()
-    
-    if (settingsData[0].extra.learning) {
-      settingsData[0].extra.learning.language[1](
-        props.settings.learning
-      );
-    }
-
-    if (settingsData[0].extra.translate) {
-      settingsData[0].extra.translate.language[1](
-        props.settings.translate
-      );
-    }
+    updateSettings();
   }, []);
 
-  useEffect(() => {
-    props.changeLearning(settingsData[0].extra.learning?.language[0])
-    props.changeTranslate(settingsData[0].extra.translate?.language[0])
-  }, [settingsData[0].extra.learning?.language[0], settingsData[0].extra.translate?.language[0]]);
-  
 
   return (
+
     <View style={{ flex: 1 }}>
-      <SettingsList settingsData={settingsData}></SettingsList>
+    <ListItem bottomDivider>
+      <ListItem.Content style={{ marginTop: 20 }}>
+        <ListItem.Title h4>Languages</ListItem.Title>
+      </ListItem.Content>
+    </ListItem>
+
+      <ListItem bottomDivider>
+        <ListItem.Content style={{ marginTop: 20 }}>
+          <ListItem.Title h5>Language you want to learn</ListItem.Title>
+          <RNPickerSelect
+            onValueChange={(value) => console.log(value)}
+            items={languagesArray}
+            value={props.settings.learning}
+          />
+        </ListItem.Content>
+      </ListItem>
+
+
+      <ListItem bottomDivider>
+        <ListItem.Content style={{ marginTop: 20 }}>
+          <ListItem.Title h5>Language you want to translate into</ListItem.Title>
+          <RNPickerSelect
+            onValueChange={(value) => console.log(value)}
+            items={languagesArray}
+            value={props.settings.translate}
+          />
+          
+        </ListItem.Content>
+      </ListItem>
+
+      <ListItem bottomDivider>
+        <ListItem.Content style={{ marginTop: 20 }}>
+          <View style={style.container}>
+        <TouchableOpacity
+          style={style.navButton}
+          onPress={() => {
+            const auth = getAuth();
+            signOut(auth)
+              .then(() => {
+                // Sign-out successful.
+              })
+              .catch((error) => {
+                // An error happened.
+              });
+          }}
+        >
+          <Text style={style.buttonTitle}>Logout</Text>
+        </TouchableOpacity>
+      </View>
+        </ListItem.Content>
+      </ListItem>
     </View>
   );
 };
